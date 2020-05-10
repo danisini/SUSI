@@ -3,7 +3,7 @@
 #include <iostream>
 #include "String.hpp"
 #include "Subject.hpp"
-class Program;
+class Program
 {
 private:
     void copyProgram(const Program&);
@@ -11,7 +11,7 @@ private:
 protected:
     String programName;
     Subject* subjects;
-    size_t numSubjects;
+    static size_t numSubjects;
 public:
     String get_program(){return programName;}
     void set_program(const String& programName_){programName = programName_;}
@@ -20,8 +20,9 @@ public:
     Program(const Program&);
     Program& operator=(const Program&);
     ~Program();
-};
 
+};
+size_t Program::numSubjects = 7;
 void Program::copyProgram(const Program& other)
 {
     programName = other.programName;
@@ -43,7 +44,7 @@ Program::~Program()
 }
 Program::Program(const Program& other)
 {
-    copyProgram();
+    copyProgram(other);
 }
 Program& Program::operator=(const Program& other)
 {
@@ -51,7 +52,7 @@ Program& Program::operator=(const Program& other)
     if(this != &other)
     {
         deleteProgram();
-        copyProgram();
+        copyProgram(other);
     }
     return (*this);
 }

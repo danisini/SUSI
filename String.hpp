@@ -8,7 +8,7 @@ class String
 private:
     char* str;
     size_t sz;
-
+    bool flagForEndl;
     void copy_string(const String&);
     void delete_string();
     void add_char(const char);
@@ -30,7 +30,7 @@ public:
 
     friend std::istream& operator>>(std::istream& is, String& str);
     friend std::ostream& operator<<(std::ostream& os, const String& str);
-    friend void getline(std::istream& is, String& str);
+    friend std::istream& getline(std::istream& is, String& str);
 
 };
 
@@ -106,7 +106,6 @@ String String::operator+(const String& other) const
     temp += other;
     return temp;
 }
-
 String& String::operator+=(const String& other)
 {
     sz += other.sz;
@@ -143,7 +142,7 @@ bool String::operator>(const String& other) const
 std::istream& operator>>(std::istream& is, String& str)
 {
     char ch;
-    String temp;
+    String temp = "";
 
     is.get(ch);
     while(ch != '\n' && ch != '\t' && ch != ' ')
@@ -151,7 +150,6 @@ std::istream& operator>>(std::istream& is, String& str)
         temp.add_char(ch);
         is.get(ch);
     }
-    temp.add_char('\0');
     str = temp;
 
     return is;
@@ -164,11 +162,13 @@ std::ostream& operator<<(std::ostream& os, const String& str)
     return os;
 }
 
-void getline(std::istream& is, String& str)
+std::istream& getline(std::istream& is, String& str)
 {
     char ch;
     String temp;
+
     is.get(ch);
+
     while(ch != '\n')
     {
         temp.add_char(ch);
