@@ -10,9 +10,12 @@ int main()
     ifstream iFile;
     string filePath;
     cin >> s;
-    Student* students;
-    Subject subjects[7];
+    Student** students;
+    Subject** subjects;
+    Program** programs;
     int cnt = 0;
+    size_t numPrograms = 0;
+    size_t numSubjects = 0;
     if(s == "open")
     {
         iFile.open("students.txt", ios::in);
@@ -22,8 +25,9 @@ int main()
         }
         else
         {
+            cout << "File students opened successfully" << endl;
             iFile >> cnt;
-            students = new Student[cnt];
+            if(cnt != 0)students = new Student*[cnt];
         }
 
         ///saving data to classes
@@ -37,22 +41,65 @@ int main()
         }
         else
         {
+            cout << "File subjects opened successfully" << endl;
             size_t year;
-            String name;
+            String name, program;
             bool type;
+            subjects = new Subject*[7];
             for(size_t i = 0; i < 7; i ++)
             {
                 getline(iFile, name);
                 iFile >> type >> year;
                 iFile.get();
-                subjects[i].construct(name, type, year);
+                getline(iFile, program);
+                subjects[i] = new Subject(name, program, type, year);
+                numSubjects ++;
+                subjects[i]->print();
+            }
+            for(size_t i = 0; i < 7; i ++)
+            {
+                bool flag = 1;
+                for(size_t j = 0; j < i; j ++)
+                {
+
+                    if(subjects[j]->get_program() == subjects[i]->get_program())
+                    {
+                        flag = 0;
+                        break;
+                    }
+                }
+
+                if(flag == 1)
+                {
+                    numPrograms ++;
+                }
+            }
+            programs = new Program*[numPrograms];
+            numPrograms = 0;
+            for(size_t i = 0; i < 7; i ++)
+            {
+                bool flag = 1;
+                for(size_t j = 0; j < i; j ++)
+                {
+                    if(subjects[j]->get_program() == subjects[i]->get_program())
+                    {
+                        flag = 0;
+                        break;
+                    }
+                }
+
+                if(flag == 1)
+                {
+                    programs[numPrograms] = new Program(subjects[i]->get_program(), subjects, numSubjects);
+                    numPrograms ++;
+                }
             }
         }
     }
     while(!(s == "exit"))
     {
         cin >> s;
-        cout << s << endl;
+        cout << "You entered:" << s << endl;
         if(s == "save")
         {
             ofstream oFile;
@@ -65,8 +112,8 @@ int main()
             {
                 for(size_t i = 0; i < cnt; i ++)
                 {
-                    oFile << students[i].get_name().size() << " " << students[i].get_name() << " " << students[i].get_fn() << " " << students[i].get_groupNum() << " " << students[i].get_status() <<
-                    " " << students[i].get_program().size() << " " << students[i].get_program() << endl;
+                    oFile << students[i]->get_name().size() << " " << students[i]->get_name() << " " << students[i]->get_fn() << " " << students[i]->get_groupNum() << " " << students[i]->get_status() <<
+                    " " << students[i]->get_programName().size() << " " << students[i]->get_programName() << endl;
                 }
             }
         }
@@ -81,14 +128,17 @@ int main()
             cin >> group;
             cin.get();
             getline(cin, name);
-            Student* temp = new Student[cnt + 1];
-            for(size_t i = 0; i < cnt; i++)
-                temp[i] = students[i];
-            temp[cnt].enroll(name, fn, group, program);
+            Program temp;
+            int indx;
+            for(size_t i = 0; i < numPrograms; i ++)
+            {
+                if(programs[i]->get_program() == program)
+                    indx = i;
+            }
+            students[cnt] = new Student(name, fn, group, *programs[indx]);
+            for(int i = 0; i < programs[indx]->get_numSubjects(); i ++)cout << programs[indx]->get_subject(i)->get_name()<<endl;
             cnt ++;
-            if(students != nullptr)delete[] students;
-            students = temp;
-            students[cnt - 1].print();
+            students[cnt - 1]->print();
         }
         else
         if(s == "advance")
@@ -97,9 +147,9 @@ int main()
             cin >> fn;
             for(size_t i = 0; i < numStudents; i ++)
             {
-                if(students[i].get_fn() == fn)
+                if(students[i]->get_fn() == fn)
                 {
-                    students[i].advance();
+                    students[i]->advance();
                     break;
                 }
             }
@@ -114,7 +164,6 @@ int main()
             {
                 string value;
                 cin >> value;
-
             }
         }
         else
@@ -124,9 +173,9 @@ int main()
             cin >> fn;
             for(size_t i = 0; i < numStudents; i ++)
             {
-                if(students[i].get_fn() == fn)
+                if(students[i]->get_fn() == fn)
                 {
-                    students[i].graduate();
+                    students[i]->graduate();
                     break;
                 }
             }
@@ -138,9 +187,9 @@ int main()
             cin >> fn;
             for(size_t i = 0; i < numStudents; i ++)
             {
-                if(students[i].get_fn() == fn)
+                if(students[i]->get_fn() == fn)
                 {
-                    students[i].interrupt();
+                    students[i]->interrupt();
                     break;
                 }
             }
@@ -152,9 +201,9 @@ int main()
             cin >> fn;
             for(size_t i = 0; i < numStudents; i ++)
             {
-                if(students[i].get_fn() == fn)
+                if(students[i]->get_fn() == fn)
                 {
-                    students[i].resume();
+                    students[i]->resume();
                     break;
                 }
             }
@@ -166,9 +215,9 @@ int main()
             cin >> fn;
             for(size_t i = 0; i < numStudents; i ++)
             {
-                if(students[i].get_fn() == fn)
+                if(students[i]->get_fn() == fn)
                 {
-                    students[i].print();
+                    students[i]->print();
                     break;
                 }
             }
@@ -182,8 +231,8 @@ int main()
             cin >> year;
             for(size_t i = 0; i < numStudents; i ++)
             {
-                if(s1 == students[i].get_program() && year == students[i].get_year())
-                        students[i].print();
+                if(s1 == students[i]->get_programName() && year == students[i]->get_year())
+                        students[i]->print();
             }
         }
         else
@@ -193,9 +242,9 @@ int main()
             cin >> fn;
             for(size_t i = 0; i < numStudents; i ++)
             {
-                if(students[i].get_fn() == fn)
+                if(students[i]->get_fn() == fn)
                 {
-                    students[i].report();
+                    students[i]->report();
                     break;
                 }
             }
@@ -210,10 +259,30 @@ int main()
             getline(cin, course);
             for(size_t i = 0; i < numStudents; i ++)
             {
-                if(students[i].get_fn() == fn)
+                if(students[i]->get_fn() == fn)
                 {
-                    students[i].print();
-                    students[i].enrollIn(course, 2.00);///not needed 2.00
+                    students[i]->print();
+                    std::cout << course << std::endl;
+                    students[i]->enrollIn(course, 2.00);///not needed 2.00
+                    break;
+                }
+            }
+        }
+        else
+        if(s == "addgrade")
+        {
+            size_t fn, numStudents = cnt;
+            String course;
+            double mark;
+            cin >> fn;
+            cin.get();
+            getline(cin, course);
+            cin >> mark;
+            for(size_t i = 0; i < numStudents; i ++)
+            {
+                if(students[i]->get_fn() == fn)
+                {
+                    students[i]->addGrade(course, mark);///not needed 2.00
                     break;
                 }
             }

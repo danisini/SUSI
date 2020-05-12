@@ -7,43 +7,112 @@ int main()
 {
     cout << "This is the system SUSI! Do you want to open a file?" << endl;
     String s;
-    /*ofstream iFile;
+    ifstream iFile;
+    string filePath;
+    cin >> s;
+    Student* students;
+    Subject subjects[7];
+    int cnt = 0;
     if(s == "open")
     {
-        string filePath;
-        cin >> filePath;
+        iFile.open("students.txt", ios::in);
+        if(!iFile.is_open())
+        {
+            cout << "Couldn't open the file or not a valid path!" << endl;
+        }
+        else
+        {
+            cout << "File students opened successfully" << endl;
+            iFile >> cnt;
+            students = new Student[cnt];
+        }
 
-        iFile.open(filePath, ios::out);
-        ///check if opened cout a message its opened or cout not a valid path
         ///saving data to classes
-
         iFile.close();
+
+
+        iFile.open("subjects.txt", ios::in);
+        if(!iFile.is_open())
+        {
+            cout << "Couldn't open the file or not a valid path!" << endl;
+        }
+        else
+        {
+            cout << "File subjects opened successfully" << endl;
+            size_t year;
+            String name, program;
+            bool type;
+            size_t numPrograms = 0;
+            for(size_t i = 0; i < 7; i ++)
+            {
+                getline(iFile, name);
+                iFile >> type >> year;
+                iFile.get();
+                getline(iFile, program);
+                iFile.get();
+                subjects[i].construct(name, program, type, year);
+                for(size_t j = 0; j < i; j ++)
+                {
+                    if(subjects[j].get_program() == program)
+                    {
+                        numPrograms --;
+                        break;
+                    }
+                }
+                numPrograms ++;
+            }
+            Program** programs;
+            for(size_t i = 0; i < numPrograms; i ++)
+            {
+                bool flag = 1;
+                for(size_t j = 0; j < v.size(); j ++)
+                {
+                    if(v[j].get_program() == )
+                }
+            }
+        }
     }
-    else cout << "Not a valid command!" << endl;
-    */
-    Student students[16];
-    int cnt = 0;
-    while(1!=0)
+    while(!(s == "exit"))
     {
         cin >> s;
+        if(s == "save")
+        {
+            ofstream oFile;
+            oFile.open("students.txt", ios::out);
+            if(!oFile.is_open())
+            {
+                cout << "Couldn't open the file or not a valid path!" << endl;
+            }
+            else
+            {
+                for(size_t i = 0; i < cnt; i ++)
+                {
+                    oFile << students[i].get_name().size() << " " << students[i].get_name() << " " << students[i].get_fn() << " " << students[i].get_groupNum() << " " << students[i].get_status() <<
+                    " " << students[i].get_program().size() << " " << students[i].get_program() << endl;
+                }
+            }
+        }
+        else
         if(s == "enroll")
         {
-            String program, name;
             size_t group, fn;
+            String program, name;
             cin >> fn;
             cin.get();
             getline(cin, program);
             cin >> group;
             cin.get();
             getline(cin, name);
-            Student newStudent(name, fn, group, program);
-            students[cnt] = newStudent;
+            Student* temp = new Student[cnt + 1];
+            for(size_t i = 0; i < cnt; i++)
+                temp[i] = students[i];
+            temp[cnt].enroll(name, fn, group, program);
             cnt ++;
-            students[cnt-1].print();
-            cout << "bam" << endl;
+            if(students != nullptr)delete[] students;
+            students = temp;
+            students[cnt - 1].print();
         }
-        cout << 1 << endl;
-        /*else
+        else
         if(s == "advance")
         {
             size_t fn, numStudents = cnt;///using static ones
@@ -67,7 +136,6 @@ int main()
             {
                 string value;
                 cin >> value;
-
             }
         }
         else
@@ -131,14 +199,12 @@ int main()
         {
             String s1;
             size_t year, numStudents = cnt;///using static ones
-            cin.get();
             getline(cin, s1);
             cin >> year;
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(s1 == students[i].get_program() && year == students[i].get_year())
-                    students[i].print();
-                else cout <<"Test " << students[i].get_program() << " " << students[i].get_year() << endl;
+                        students[i].print();
             }
         }
         else
@@ -154,7 +220,26 @@ int main()
                     break;
                 }
             }
-        }*/
+        }
+        else
+        if(s == "enrollin")
+        {
+            size_t fn, numStudents = cnt;
+            String course;
+            cin >> fn;
+            cin.get();
+            getline(cin, course);
+            for(size_t i = 0; i < numStudents; i ++)
+            {
+                if(students[i].get_fn() == fn)
+                {
+                    students[i].print();
+                    std::cout << course << std::endl;
+                    students[i].enrollIn(course, 2.00);///not needed 2.00
+                    break;
+                }
+            }
+        }
     }
     return 0;
 }

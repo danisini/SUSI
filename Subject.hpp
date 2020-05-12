@@ -5,18 +5,22 @@
 class Subject
 {
 private:
-    String name;
+    String name, program;
     bool type;///zadulj izbiraema
     size_t year;
     double mark;
+
 public:
     void set_mark(const double& mark_){mark = mark_;}
     const double get_mark()const{return mark;}
     const size_t get_year()const{return year;}
-    String get_name()const{return name;}
-    Subject(String, const bool&, const size_t&);
-    void construct(String, const bool&, const size_t&);
+    const String get_program()const{return program;}
+    const String get_name()const{return name;}
+    const bool get_type()const{return type;}
+    Subject(String, String, const bool&, const size_t&);
+    void construct(String, String, const bool&, const size_t&);
     void print()const;
+
     bool operator==(const Subject&);
 };
 void Subject::print()const
@@ -24,18 +28,23 @@ void Subject::print()const
     if(!type)std::cout << "name:" << name << " (Not mandatory) mark:" << mark << std::endl;
     else std::cout << "name:" << name << " (Mandatory) mark:" << mark << std::endl;
 }
-void Subject::construct(String name_, const bool& type_, const size_t& year_)
+void Subject::construct(String name_, String program_, const bool& type_, const size_t& year_)
 {
     name = name_;
+    program = program_;
     type = type_;
     year = year_;
+
 }
-Subject::Subject(String name_ = "", const bool& type_ = 1, const size_t& year_ = 1)
+Subject::Subject(String name_ = "", String program_= "", const bool& type_ = 1, const size_t& year_ = 1)
 {
     name = name_;
+    program = program_;
     type = type_;
     year = year_;
     mark = 2.00;
+
+    std::cout << "test7" << std::endl;
 }
 bool Subject::operator==(const Subject& other)
 {
