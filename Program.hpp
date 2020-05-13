@@ -32,7 +32,6 @@ Program::Program(String programName_ = "", Subject** subjects_ = nullptr, const 
     {
         if(subjects_[i]->get_program() == programName)
         {
-            ///subjects[numSubjects] = new Subject(subjects_[i]->get_name(), subjects_[i]->get_program(), subjects_[i]->get_type(), subjects_[i]->get_year());
             numSubjects ++;
         }
     }
@@ -54,7 +53,7 @@ void Program::copyProgram(const Program& other)
 {
     programName = other.programName;
     numSubjects = other.numSubjects;
-    subjects = new Subject*[other.numSubjects];
+    subjects = new Subject*[numSubjects];
     for(size_t i = 0; i < numSubjects; i ++)
     {
         subjects[i] = other.subjects[i];
@@ -63,7 +62,7 @@ void Program::copyProgram(const Program& other)
 void Program::deleteProgram()
 {
     for(size_t i = 0; i < numSubjects; i ++)
-        if(subjects[i] != nullptr)delete[] subjects[i];
+        if(subjects[i] != nullptr)delete subjects[i];
     if(subjects != nullptr)delete[] subjects;
 }
 Program::~Program()
@@ -76,7 +75,6 @@ Program::Program(const Program& other)
 }
 Program& Program::operator=(const Program& other)
 {
-
     if(this != &other)
     {
         deleteProgram();

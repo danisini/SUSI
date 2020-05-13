@@ -1,0 +1,513 @@
+#ifndef _SUSI_H_
+#define _SUSI_H_
+#include "Student.hpp"
+#include "Subject.hpp"
+#include "String.hpp"
+#include "Program.hpp"
+
+class Susi
+{
+private:
+    Student** students;
+    Subject** subjects;
+    Program** programs;
+    size_t numPrograms;
+    size_t numSubjects;
+    size_t numStudents;
+    ofstream oFile;
+    ifstream iFile;
+    String filePathSubj;
+    String filePathStud;
+
+    void open();
+    void save();
+    void help();
+    void saveAs();
+    void deleteSusi();
+    size_t countSpaces(String);
+public:
+    Susi();
+    ~Susi();
+    Susi(const Susi&) = delete;
+    Susi& operator=(const Susi&) = delete;
+
+};
+void Susi::deleteSusi()
+{
+    for(size_t i = 0; i < numSubjects; i ++)
+        delete subjects[i];
+    if(subjects != nullptr)delete[] subjects;
+
+    for(size_t i = 0; i < numPrograms; i ++)
+        delete programs[i];
+    if(programs != nullptr)delete[] programs;
+
+    for(size_t i = 0; i < numStudents; i ++)
+        delete students[i];
+    if(students != nullptr)delete[] students;
+
+}
+Susi::~Susi();
+{
+    deleteSusi();
+}
+void Susi::help()
+{
+    cout << "The following commands are supported:" << endl;
+    cout << "open <filePath>    |" << "opens a file with path <filePath>" << endl;
+    cout << "close              |" << "closes currently opened files" << endl;
+    cout << "help               |" << "prints this information" << endl;
+    cout << "save               |" << "saves currently opened files" << endl;
+    cout << "save as <filePath> |" << "saves currently opened files at path <filePath>" << endl;
+    cout << "exit               |" << "exits the program" << endl;
+    cout << "enroll <fn>        |" << "enrolls student with faculty number <fn>," << endl;
+    cout << "<program>          |" << "program name <program>," << endl;
+    cout << "<group>            |" << "group name <group> and" << endl;
+    cout << "<name>             |" << "name <name> as a first year student" << endl;
+    cout << "advance <fn>       |" << "enrolls student with faculty number <fn> in the next year" << endl;
+    cout << "change <fn>        |" << "for student with faculty number <fn> changes" << endl;
+    cout << "<option>           |" << "either program, or group, or year described in <option>" << endl;
+    cout << "<value>            |" << "with value <value> if possible" << endl;
+    cout << "graduate <fn>      |" << "student with faculty number <fn> graduates if possible" << endl;
+    cout << "interrupt <fn>     |" << "student with faculty number <fn> interrupts" << endl;
+    cout << "resume <fn>        |" << "student with faculty number <fn> is no longer with no rights"  << endl;
+    cout << "print <fn>         |" << "prints info about student with faculty number <fn>" << endl;
+    cout << "printall           |" << "prints info about all the students" << endl;
+    cout << "<program>          |" << "in program <program>" << endl;
+    cout << "<year>             |" << "and year <year>" << endl;
+    cout << "enrollin <fn>      |" << "enrolls in student with faculty number <fn>" << endl;
+    cout << "<course>           |" << "in course with name <course>" << endl;
+    cout << "addgrade <fn>      |" << "adds grade <grade>" << endl;
+    cout << "<course>           |" << "for student with faculty number <fn>" << endl;
+    cout << "<grade>            |" << "in course with name <course>" << endl;
+    cout << "protocol <course>  |" << "prints a protocol for course with name <course>" << endl;
+    cout << "report <fn>        |" << "prints info about the grades of a student with faculty number <fn>" << endl;
+}
+void Susi::open(String input)
+{
+    String filePath = "";
+    for(size_t i = 5; i < input.size(); i ++)
+    {
+        filePath += input[i];
+    }
+    iFile.open(filePath, ios::in);
+    if(!iFile.is_open())
+    {
+        cout << "Couldn't open the file or not a valid path!" << endl;
+        return;
+    }
+    cout << "File opened successfully" << endl;
+    String fileType;
+    iFile >> fileType;
+    if(fileType == "students")
+    {
+        numStudents = 0;
+        filePathStudents = filePath;
+        iFile >> numStudents;
+        if(cnt != 0)students = new Student*[numStudents];
+        String name, program, subjName;
+        double mark;
+        size_t fn, status, groupNum, numSubjTaken;
+        int indx;
+        for(size_t i = 0; i < numStudents; i ++)
+        {
+            indx = -1;
+            getline(iFile, name);
+            iFile >> fn >> groupNum >> status;
+            iFile.get();
+            getline(iFile, program);
+            for(size_t j = 0; j < numPrograms; j ++)
+            {
+                if(programs[j]->get_program() == program)
+                {
+                    indx = j;
+                    break;
+                }
+            }
+            iFile >> numSubjTaken;
+            if(indx != -1)
+            {
+                students[i] = new Student(name, fn, year, groupNum, *programs[indx]);
+                for(size_t j = 0; j < numSubjTaken; j ++)
+                {
+                    iFile >> subjName;
+                    iFile >> mark;
+                    students[i]->addSubj(subjName, mark);
+                }
+            }
+            else cout << "This students is not in a valid program" << endl;
+        }
+        ///saving data to classes
+    }
+    else if(fileType == "subjects")
+    {
+        filePathSubjects = filePath;
+        numSubjects = 0;
+        iFile >> numSubjects;
+        size_t year;
+        String name, program;
+        bool type;
+        subjects = new Subject*[numSubjects];
+        for(size_t i = 0; i < numSubjects; i ++)
+        {
+            getline(iFile, name);
+            iFile >> type >> year;
+            iFile.get();
+            getline(iFile, program);
+            subjects[i] = new Subject(name, program, type, year);
+        }
+        for(size_t i = 0; i < numSubjects; i ++)
+        {
+            bool flag = 1;
+            for(size_t j = 0; j < i; j ++)
+            {
+                if(subjects[j]->get_program() == subjects[i]->get_program())
+                {
+                    flag = 0;
+                    break;
+                }
+            }
+
+            if(flag == 1)
+            {
+                numPrograms ++;
+            }
+        }
+        programs = new Program*[numPrograms];
+        numPrograms = 0;
+        for(size_t i = 0; i < numSubjects; i ++)
+        {
+            bool flag = 1;
+            for(size_t j = 0; j < i; j ++)
+            {
+                if(subjects[j]->get_program() == subjects[i]->get_program())
+                {
+                    flag = 0;
+                    break;
+                }
+            }
+
+            if(flag == 1)
+            {
+                programs[numPrograms] = new Program(subjects[i]->get_program(), subjects, numSubjects);
+                numPrograms ++;
+            }
+        }
+    }
+    else
+    {
+        cout << "This file is not for students or subjects so it is not allowed to be opened" << endl;
+    }
+    iFile.close();
+}
+size_t Susi::countSpaces(String str)
+{
+    size_t cnt = 0;
+    for(size_t i = 0; i < str.size() - 1; i ++)
+    {
+        if(str[i] == ' ')cnt ++;
+    }
+    return cnt;
+}
+void Susi::save()
+{
+    ofstream oFile;
+    oFile.open(filePathStud, ios::out);
+    if(!oFile.is_open())
+    {
+        cout << "We are sorry! Couldn't save file with path " << filePathStud <<  " properly!" << endl;
+        return;
+    }
+    else
+    {
+        oFile << "students" << '\n' << numStudents << '\n';
+        for(size_t i = 0; i < numStudents; i ++)
+        {
+            oFile << students[i]->get_name() << '\n' << students[i]->get_fn() << " " << students[i]->get_groupNum() << " " << students[i]->get_status() << '\n' << students[i]->get_programName() << endl;
+            students[i]->saveSubjects(oFile);
+        }
+        oFile.close();
+    }
+    oFile.open(filePathSubj, ios::out);
+    if(!oFile.is_open())
+    {
+        cout << "We are sorry! Couldn't save file with path " << filePathSubj <<  " properly!" << endl;
+        return;
+    }
+    else
+    {
+        oFile << "subjects" << '\n' << numSubjects << '\n';
+        for(size_t i = 0; i < numSubjects; i ++)
+        {
+            oFile << subjects[i]->get_name() << '\n' << subjects[i]->get_type() << " " << subjects[i]->get_year() << '\n' << subjects[i]->get_program() << '\n';
+        }
+        oFile.close();
+    }
+}
+void Susi::saveAs(String input)
+{
+    String filePath = "";
+    for(size_t i = 8; i < input.size(); i ++)
+    {
+        filePath += input[i];
+    }
+    filePathSubj = filePath + "\subjects.txt";
+    filePathStud = filePath + "\students.txt";
+    save();
+}
+Susi::Susi()
+{
+    String command, input;
+    while(!(command == "exit"))
+    {
+        command = ""
+        getline(cin, input);
+        size_t cntSpaces = countSpaces(input);
+        for(size_t i = 0; i < str.size(); i ++)
+        {
+            if(input[i] == ' ')break;
+            command += input[i];
+        }
+        switch(command)
+        {
+            case "open":
+            {
+                open(input);
+            }
+            case "save":
+            {
+                if(cntSpaces == 2)saveAs(input);
+                else save();
+            }
+            case "close":
+            {
+                deleteSusi();
+            }
+            case "help":
+            {
+                help();
+            }
+            case "enroll":
+            {
+                size_t group, fn;
+                String program, name;
+                cin >> fn;
+                cin.get();
+                getline(cin, program);
+                cin >> group;
+                cin.get();
+                getline(cin, name);
+                Program temp;
+                int indx;
+                for(size_t i = 0; i < numPrograms; i ++)
+                {
+                    if(programs[i]->get_program() == program)
+                        indx = i;
+                }
+                students[cnt] = new Student(name, fn, group, *programs[indx]);
+                for(int i = 0; i < programs[indx]->get_numSubjects(); i ++)cout << programs[indx]->get_subject(i)->get_name()<<endl;
+                cnt ++;
+                students[cnt - 1]->print();
+            }
+            case "advance":
+            {
+                size_t fn; ///using static ones
+                cin >> fn;
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        students[i]->advance();
+                        break;
+                    }
+                }
+            }
+            case "change":
+            {
+                size_t fn, indx;
+                String option;
+                cin >> fn;
+                cin.get();
+                getline(cin, option);
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        indx = i;
+                        break;
+                    }
+                }
+                if(option == "program")
+                {
+                    String value;
+                    getline(cin, value);
+                    if(!students[indx]->is_interrupted() && students[indx]->canChangeProgram())
+                    {
+                        int ind = -1;
+                        for(size_t i = 0; i < numPrograms; i ++)
+                        {
+                            if(value == programs[i]->get_program())
+                            {
+                                ind = i;
+                                break;
+                            }
+                        }
+                        if(ind != -1)
+                        {
+                            cout << programs[ind]->get_program() << " " << programs[ind]->get_numSubjects() << endl;
+                            students[indx]->set_program(*programs[ind]);
+                        }
+                        else cout << "Program not found!" << endl;
+
+                    }
+                    else
+                    {
+                        cout << "The student is not allowed to change program!" << endl;
+                    }
+                }
+                else if(option == "group")
+                {
+                    size_t group;
+                    cin >> group;
+                    if(!students[indx]->is_interrupted())
+                    {
+                        students[indx]->set_group(group);
+                    }
+                    else
+                    {
+                        cout << "The students is not allowed to change groups!" << endl;
+                    }
+                }
+                else if(option == "year")
+                {
+                    size_t year;
+                    cin >> year;
+                    if(!students[indx]->is_interrupted() && students[indx]->canChangeYear(year))
+                    {
+                        students[indx]->set_year(year);
+                    }
+                }
+                else cout << "Not a valid option for changing" << endl;
+            }
+            case "graduate":
+            {
+                size_t fn;///using static ones
+                cin >> fn;
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        students[i]->graduate();
+                        break;
+                    }
+                }
+            }
+            case "interrupt":
+            {
+                size_t fn;///using static ones
+                cin >> fn;
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        students[i]->interrupt();
+                        break;
+                    }
+                }
+            }
+            case "resume":
+            {
+                size_t fn;///using static ones
+                cin >> fn;
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        students[i]->resume();
+                        break;
+                    }
+                }
+            }
+            case "print":
+            {
+                size_t fn;
+                cin >> fn;
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        students[i]->print();
+                        break;
+                    }
+                }
+            }
+            case "printall":
+            {
+                String s1;
+                size_t year;
+                getline(cin, s1);
+                cin >> year;
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(s1 == students[i]->get_programName() && year == students[i]->get_year())
+                            students[i]->print();
+                }
+            }
+            case "enrollin":
+            {
+                size_t fn;
+                String course;
+                cin >> fn;
+                cin.get();
+                getline(cin, course);
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        students[i]->print();
+                        std::cout << course << std::endl;
+                        students[i]->enrollIn(course, 2.00);///not needed 2.00
+                        break;
+                    }
+                }
+            }
+            case "addgrade":
+            {
+                size_t fn;
+                String course;
+                double mark;
+                cin >> fn;
+                cin.get();
+                getline(cin, course);
+                cin >> mark;
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        students[i]->addGrade(course, mark);///not needed 2.00
+                        break;
+                    }
+                }
+
+            }
+            case "protocol":
+            {
+
+            }
+            case "report":
+            {
+                size_t fn;///using static ones
+                cin >> fn;
+                for(size_t i = 0; i < numStudents; i ++)
+                {
+                    if(students[i]->get_fn() == fn)
+                    {
+                        students[i]->report();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+#endif // _SUSI_H_

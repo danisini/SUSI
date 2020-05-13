@@ -22,11 +22,14 @@ public:
     bool operator==(const String&)const;
     bool operator<(const String&)const;
     String operator+(const String&)const;
+    String operator+(const char&)const;
     String& operator+=(const String&);
+    String& operator+=(const char&);
     char& operator[](const size_t&);
     bool operator<=(const String&)const;
     bool operator>=(const String&)const;
     bool operator>(const String&)const;
+    const char* stringToChar(){return str;}
 
     friend std::istream& operator>>(std::istream& is, String& str);
     friend std::ostream& operator<<(std::ostream& os, const String& str);
@@ -105,6 +108,23 @@ String String::operator+(const String& other) const
     String temp(*this);
     temp += other;
     return temp;
+}
+String String::operator+(const char& other) const
+{
+    String temp(*this);
+    temp += other;
+    return temp;
+}
+
+String& String::operator+=(const char& other)
+{
+    sz += 1;
+    char* temp = new char[sz + 1];
+    strcpy(temp, str);
+    delete_string();
+    temp[sz - 1] = other;
+    str = temp;
+    return *this;
 }
 String& String::operator+=(const String& other)
 {

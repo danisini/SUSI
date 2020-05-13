@@ -2,14 +2,20 @@
 #include <fstream>
 #include "Student.hpp"
 #include "String.hpp"
+#include "susi.hpp"
 using namespace std;
 int main()
 {
-    cout << "This is the system SUSI! Do you want to open a file?" << endl;
+    Susi system;
+
+
+
+    /*cout << "This is the system SUSI! Do you want to open a file?" << endl;
     String s;
     ifstream iFile;
     string filePath;
     cin >> s;
+    Susi::systemSusi.menu();
     Student** students;
     Subject** subjects;
     Program** programs;
@@ -157,14 +163,73 @@ int main()
         else
         if(s == "change")
         {
-            size_t fn;
-            string option;
-            cin >> fn >> option;
+            size_t fn, numStudents = cnt, indx ;
+            String option;
+            cin >> fn;
+            cin.get();
+            getline(cin, option);
+            for(size_t i = 0; i < numStudents; i ++)
+            {
+                if(students[i]->get_fn() == fn)
+                {
+                    indx = i;
+                    break;
+                }
+            }
             if(option == "program")
             {
-                string value;
-                cin >> value;
+                String value;
+                getline(cin, value);
+                cout << "test1 " << value << endl;;
+                if(!students[indx]->is_interrupted() && students[indx]->canChangeProgram())
+                {
+                    cout << "test2 " << endl;
+                    int ind = -1;
+                    for(size_t i = 0; i < numPrograms; i ++)
+                    {
+                        if(value == programs[i]->get_program())
+                        {
+                            ind = i;
+                            break;
+                        }
+                    }
+                    cout <<"test3 "<< ind << endl;
+                    if(ind != -1)
+                    {
+                        cout << programs[ind]->get_program() << " " << programs[ind]->get_numSubjects() << endl;
+                        students[indx]->set_program(*programs[ind]);
+                    }
+                    else cout << "Program not found!" << endl;
+
+                }
+                else
+                {
+                    cout << "The student is not allowed to change program!" << endl;
+                }
             }
+            else if(option == "group")
+            {
+                size_t group;
+                cin >> group;
+                if(!students[indx]->is_interrupted())
+                {
+                    students[indx]->set_group(group);
+                }
+                else
+                {
+                    cout << "The students is not allowed to change groups!" << endl;
+                }
+            }
+            else if(option == "year")
+            {
+                size_t year;
+                cin >> year;
+                if(!students[indx]->is_interrupted() && students[indx]->canChangeYear(year))
+                {
+                    students[indx]->set_year(year);
+                }
+            }
+            else cout << "Not a valid option for changing" << endl;
         }
         else
         if(s == "graduate")
@@ -288,5 +353,6 @@ int main()
             }
         }
     }
+    */
     return 0;
 }

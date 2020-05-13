@@ -4,6 +4,7 @@
 #include "String.hpp"
 #include "Program.hpp"
 #include <vector>
+#include <fstream>
 class Student
 {
 private:
@@ -15,7 +16,7 @@ private:
     std::vector<int> indexOfTakenOnes;///must fix it using dynamic array
 public:
     Student();
-    Student(String, const size_t&, const size_t&, const Program&);
+    Student(String, const size_t&, const size_t&, const size_t&, const Program&);
     Student& operator=(const Student&);
     const size_t get_groupNum()const{return groupNum;}
     const size_t get_year()const{return year;}
@@ -24,9 +25,13 @@ public:
     const size_t get_fn()const{return fn;}
     const String get_name()const{return name;}
     const String get_programName()const{return program.get_program();}
-    ///void set_groupNum(const size_t& newGN){groupNum = newGn;}
-   /// void set_year(const size_t& newYear){year = newYear;}
-    ///void set_status(const size_t& newStatus){status = newStatus;}
+
+    void set_program(const Program& program_){program = program_;}
+    void set_group(const size_t& groupNum_){groupNum = groupNum_;}
+    void set_year(const size_t& year_){year = year_;}
+
+    bool canChangeProgram();
+    bool canChangeYear(const size_t&);
 
     void enroll(String, const size_t&, const size_t&, const Program&);
     void enrollIn(String, const double&);
@@ -36,11 +41,39 @@ public:
     void resume();
     void print();
     void report();
-
     void addGrade(String, const double&);
-    bool is_interrupted();
 
+    bool is_interrupted();
+    void saveSubjects(std::ofstream&);
+    void addSubj(String, const double&);
 };
+void Student::saveSubjects(std::ofstream& oFile)
+{
+    oFile << indexOfTakenOnes.size() << std::endl;
+    for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
+    {
+        oFile << program.get_subject(indexOfTakenOnes[i])->get_name() << '\n' << program.get_subject(indexOfTakenOnes[i])->get_mark() << std::endl;
+    }
+}
+bool Student::canChangeProgram()
+{
+    for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
+    {
+        if(program.get_subject(indexOfTakenOnes[i])->get_mark() < 3.00)return 0;
+    }
+    return 1;
+}
+bool Student::canChangeYear(const size_t& year_)
+{
+    size_t cnt = 0;
+    if(year + 1 != year_)return 0;
+    for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
+    {
+        if(program.get_subject(indexOfTakenOnes[i])->get_mark() < 3.00)cnt ++;
+        if(cnt > 2)return 0;
+    }
+    return 1;
+}
 void Student::addGrade(String course, const double& mark_)
 {
     for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
@@ -148,9 +181,21 @@ void Student::report()
     }
     if(indexOfTakenOnes.size() != 0) std::cout << "Average grades:" << (double)aver/indexOfTakenOnes.size() << std::endl;
 }
+void Student::addSubj(String subjName, const double& mark)
+{
+    for(size_t i = 0; i < program.get_numSubjects(); i ++)
+    {
+        if(program.get_subject(i)->get_name() == subjName)
+        {
+            program.get_subject(i)->set_mark(mark);
+            indexOfTakenOnes.push_back(i);
+            return;
+        }
+    }
+    std::cout << "The subject " << subjName << " was not found!" << std::endl;
+}
 void Student::enrollIn(String subjName, const double& mark)
 {
-    std::cout <<"programName= " << program.get_program() << " "<< program.get_numSubjects() << std::endl;
     for(size_t i = 0; i < program.get_numSubjects(); i ++)
     {
         if(program.get_subject(i)->get_name() == subjName)
@@ -172,12 +217,12 @@ void Student::enrollIn(String subjName, const double& mark)
 Student::Student()
 {
 }
-Student::Student(String name_, const size_t& fn_, const size_t& groupNum_, const Program& program_)
+Student::Student(String name_, const size_t& fn_, const size_t& year_, const size_t& groupNum_, const Program& program_)
 {
     name = name_;
     fn = fn_;
     groupNum = groupNum_;
-    year = 1;
+    year = year_;
     status = 0;///zapisan
     program = program_;
 }
