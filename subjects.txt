@@ -1,3 +1,5 @@
+subjects
+7
 OOP
 1 1
 komp nauki

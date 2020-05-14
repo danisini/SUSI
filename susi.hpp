@@ -17,6 +17,7 @@ private:
     String filePathSubj;
     String filePathStud;
 
+    void deleteStudent();
     void open(String);
     void save();
     void help();
@@ -126,7 +127,7 @@ void Susi::open(String input)
             iFile >> numSubjTaken;
             if(indx != -1)
             {
-                students[i] = new Student(name, fn, year, groupNum, *programs[indx]);
+                students[i] = new Student(name, fn, year, groupNum, status, *programs[indx]);
                 for(size_t j = 0; j < numSubjTaken; j ++)
                 {
                     iFile >> subjName;
@@ -140,21 +141,28 @@ void Susi::open(String input)
     }
     else if(fileType == "subjects")
     {
+        std::cout << "We are here" << std::endl;
         filePathSubj = filePath;
         numSubjects = 0;
         iFile >> numSubjects;
         size_t year;
         String name, program;
         bool type;
+        std::cout << "num=" << numSubjects << std::endl;
         subjects = new Subject*[numSubjects];
+        iFile.get();
         for(size_t i = 0; i < numSubjects; i ++)
         {
             getline(iFile, name);
+            std::cout << name ;
             iFile >> type >> year;
             iFile.get();
             getline(iFile, program);
+            std::cout << name << " " << program << "  " << type << " " << year <<std::endl;
             subjects[i] = new Subject(name, program, type, year);
+            std::cout << name << " " << program << "  " << type << " " << year <<std::endl;
         }
+        std::cout << "test10" << std::endl;
         for(size_t i = 0; i < numSubjects; i ++)
         {
             bool flag = 1;
@@ -255,9 +263,17 @@ void Susi::saveAs(String input)
     filePathStud = filePath + "\students.txt";
     save();
 }
+void Susi::deleteStudent()
+{
+    for(size_t i = 0; i < numStudents; i ++)
+    {
+        delete students[i];
+    }
+}
 Susi::Susi()
 {
-    String command, input;
+    numStudents = numSubjects = numPrograms = 0;
+    String command = "", input;
     while(!(command == "exit"))
     {
         command = "";
@@ -266,8 +282,9 @@ Susi::Susi()
         for(size_t i = 0; i < input.size(); i ++)
         {
             if(input[i] == ' ')break;
-            command += input[i];
+            command = command + input[i];
         }
+        std::cout << command << std::endl;
         if(command == "open")
         {
             open(input);
@@ -296,13 +313,27 @@ Susi::Susi()
             std::cin.get();
             getline(std::cin, name);
             Program temp;
-            int indx;
+            int indx = -1;
             for(size_t i = 0; i < numPrograms; i ++)
             {
                 if(programs[i]->get_program() == program)
                     indx = i;
             }
-            students[numStudents] = new Student(name, fn, 1, group, *programs[indx]);
+            Student** tempor = new Student*[numStudents + 1];
+            std::cout << numStudents << std::endl;
+            for(size_t i = 0; i < numStudents; i ++)
+            {
+                tempor[i] = new Student(*students[i]);
+            }
+
+            std::cout << "test1" << std::endl;
+            if(indx != -1) tempor[numStudents] = new Student(name, fn, 1, group, 0, *programs[indx]);
+            else std::cout << "This student belongs to no program" << std::endl;
+            std::cout << "test4" << std::endl;
+            deleteStudent();
+            std::cout << "test3" << std::endl;
+            students = tempor;
+            std::cout << "test2" << std::endl;
             for(int i = 0; i < programs[indx]->get_numSubjects(); i ++)std::cout << programs[indx]->get_subject(i)->get_name()<<std::endl;
             numStudents ++;
             students[numStudents - 1]->print();

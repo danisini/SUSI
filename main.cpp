@@ -7,9 +7,6 @@ using namespace std;
 int main()
 {
     Susi system;
-
-
-
     /*cout << "This is the system SUSI! Do you want to open a file?" << endl;
     String s;
     ifstream iFile;

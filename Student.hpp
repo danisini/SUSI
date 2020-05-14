@@ -16,7 +16,7 @@ private:
     std::vector<int> indexOfTakenOnes;///must fix it using dynamic array
 public:
     Student();
-    Student(String, const size_t&, const size_t&, const size_t&, const Program&);
+    Student(String, const size_t&, const size_t&, const size_t&, const size_t&, const Program&);
     Student& operator=(const Student&);
     const size_t get_groupNum()const{return groupNum;}
     const size_t get_year()const{return year;}
@@ -217,13 +217,13 @@ void Student::enrollIn(String subjName, const double& mark)
 Student::Student()
 {
 }
-Student::Student(String name_, const size_t& fn_, const size_t& year_, const size_t& groupNum_, const Program& program_)
+Student::Student(String name_, const size_t& fn_, const size_t& year_, const size_t& groupNum_, const size_t& status_, const Program& program_)
 {
     name = name_;
     fn = fn_;
     groupNum = groupNum_;
     year = year_;
-    status = 0;///zapisan
+    status = status_;///0 - zapisan
     program = program_;
 }
 #endif // _STUDENT_H_

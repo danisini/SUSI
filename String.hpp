@@ -123,6 +123,7 @@ String& String::operator+=(const char& other)
     strcpy(temp, str);
     delete_string();
     temp[sz - 1] = other;
+    temp[sz] = '\0';
     str = temp;
     return *this;
 }
@@ -133,6 +134,7 @@ String& String::operator+=(const String& other)
     strcpy(temp, str);
     delete_string();
     strcat(temp, other.str);
+    temp[sz] = '\0';
     str = temp;
     return *this;
 }
