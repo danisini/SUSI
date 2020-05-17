@@ -1,2 +1,34 @@
 students
-0
+5
+kris
+81202 1 5 0
+kn
+1
+Uvod v programiraneto
+2
+branko
+81204 1 5 0
+kn
+1
+Uvod v programiraneto
+2
+daniel velichkov
+81999 1 5 0
+komp nauki
+2
+Uvod v programiraneto
+4.3
+OOP
+3.4
+melani
+81203 2 6 0
+kn
+1
+Uvod v programiraneto
+2
+iliqn
+81205 2 6 0
+kn
+1
+Uvod v programiraneto
+2

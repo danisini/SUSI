@@ -26,7 +26,7 @@ public:
     const String get_name()const{return name;}
     const String get_programName()const{return program.get_program();}
 
-    void set_program(const Program& program_){program = program_;}
+    void set_program(const Program& program_){program.changeProgram(program_);}
     void set_group(const size_t& groupNum_){groupNum = groupNum_;}
     void set_year(const size_t& year_){year = year_;}
 
@@ -43,10 +43,20 @@ public:
     void report();
     void addGrade(String, const double&);
 
+    void printForProtocol(String course);
     bool is_interrupted();
     void saveSubjects(std::ofstream&);
     void addSubj(String, const double&);
+    bool hasSubject(String);
 };
+bool Student::hasSubject(String course)
+{
+    for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
+    {
+        if(program.get_subject(indexOfTakenOnes[i])->get_name() == course)return 1;
+    }
+    return 0;
+}
 void Student::saveSubjects(std::ofstream& oFile)
 {
     oFile << indexOfTakenOnes.size() << std::endl;
@@ -59,7 +69,7 @@ bool Student::canChangeProgram()
 {
     for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
     {
-        if(program.get_subject(indexOfTakenOnes[i])->get_mark() < 3.00)return 0;
+        if(program.get_subject(indexOfTakenOnes[i])->get_mark() < 3.00 && program.get_subject(indexOfTakenOnes[i])->get_type() == 0)return 0;
     }
     return 1;
 }
@@ -69,7 +79,7 @@ bool Student::canChangeYear(const size_t& year_)
     if(year + 1 != year_)return 0;
     for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
     {
-        if(program.get_subject(indexOfTakenOnes[i])->get_mark() < 3.00)cnt ++;
+        if(program.get_subject(indexOfTakenOnes[i])->get_mark() < 3.00 && program.get_subject(indexOfTakenOnes[i])->get_type() == 0)cnt ++;
         if(cnt > 2)return 0;
     }
     return 1;
@@ -135,28 +145,18 @@ void Student::resume()
 }
 void Student::print()
 {
-    std::cout << "name:" << name << " fn:" << fn << " year:" << year << " group:" << groupNum <<" program:" << program.get_program() <<  std::endl;
-    /*std::cout << "Exams taken:" << std::endl;
-    double aver = 0.0;
+    std::cout << "name: " << name << ", fn: " << fn << ", year: " << year << ", group: " << groupNum <<", program: " << program.get_program() <<  std::endl;
+}
+void Student::printForProtocol(String course)
+{
+    std::cout << "name: " << name << ", fn: " << fn << ", year: " << year << ", group: " << groupNum << ", mark: ";
     for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
     {
-        aver += subjects[indexOfTakenOnes[i]].get_mark();
-        if(subjects[indexOfTakenOnes[i]].get_mark() >= 3.00)
+        if(program.get_subject(indexOfTakenOnes[i])->get_name() == course)
         {
-            subjects[indexOfTakenOnes[i]].print();
+            std::cout << program.get_subject(indexOfTakenOnes[i])->get_mark() << std::endl;
         }
     }
-    std::cout << "Exams not taken:" << std::endl;
-    for(size_t i = 0; i < indexOfTakenOnes.size(); i ++)
-    {
-        if(subjects[indexOfTakenOnes[i]].get_mark() < 3.00)
-        {
-            subjects[indexOfTakenOnes[i]].print();
-        }
-    }
-    if(indexOfTakenOnes.size() != 0) std::cout << "Average grades:" << (double)aver/indexOfTakenOnes.size() << std::endl;
-    */
-    return;
 }
 void Student::report()
 {

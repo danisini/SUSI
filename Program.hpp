@@ -1,6 +1,7 @@
 #ifndef _PROGRAM_H_
 #define _PROGRAM_H_
 #include <iostream>
+#include <vector>
 #include "String.hpp"
 #include "Subject.hpp"
 class Program
@@ -11,6 +12,7 @@ private:
     String programName;
     Subject** subjects;
     size_t numSubjects;
+    std::vector <size_t> indexOfSubjects;
 public:
     const String get_program()const{return programName;}
     void set_program(const String& programName_){programName = programName_;}
@@ -20,7 +22,7 @@ public:
     Program(const Program&);
     Program& operator=(const Program&);
     ~Program();
-
+    void changeProgram(const Program&);
 };
 
 Program::Program(String programName_ = "", Subject** subjects_ = nullptr, const size_t& numSubjects_ = 0)
@@ -35,20 +37,38 @@ Program::Program(String programName_ = "", Subject** subjects_ = nullptr, const 
             numSubjects ++;
         }
     }
-    std::cout << "ProgramName = " << programName << " numSubj = " << numSubjects << std::endl;
     subjects = new Subject*[numSubjects];
-    numSubjects = 0;
-    for(size_t i = 0; i < numSubjects_; i ++)
+    numSubjects = numSubjects_;
+    for(size_t i = 0; i < numSubjects; i ++)
     {
-        subjects_[i]->print();
         if(subjects_[i]->get_program() == programName)
         {
-            subjects[numSubjects] = new Subject(subjects_[i]->get_name(), subjects_[i]->get_program(), subjects_[i]->get_type(), subjects_[i]->get_year());
-            numSubjects ++;
+            indexOfSubjects.push_back(i);
         }
+        subjects[i] = new Subject(subjects_[i]->get_name(), subjects_[i]->get_program(), subjects_[i]->get_type(), subjects_[i]->get_year());
     }
 }
-
+void Program::changeProgram(const Program& other)
+{
+    programName = other.programName;
+    for(size_t i = 0; i < other.indexOfSubjects.size(); i ++)
+    {
+        bool flag = 1;
+        for(size_t j = 0; j < indexOfSubjects.size(); i ++)
+        {
+            if(other.indexOfSubjects[i] == indexOfSubjects[j])
+            {
+                flag = 0;
+                break;
+            }
+        }
+        if(flag)
+        {
+            indexOfSubjects.push_back(other.indexOfSubjects[i]);
+        }
+        else break;
+    }
+}
 void Program::copyProgram(const Program& other)
 {
     programName = other.programName;
@@ -57,6 +77,11 @@ void Program::copyProgram(const Program& other)
     for(size_t i = 0; i < numSubjects; i ++)
     {
         subjects[i] = other.subjects[i];
+    }
+    indexOfSubjects.clear();
+    for(size_t i = 0; i < other.indexOfSubjects.size(); i ++)
+    {
+        indexOfSubjects.push_back(other.indexOfSubjects[i]);
     }
 }
 void Program::deleteProgram()
@@ -71,13 +96,13 @@ Program::~Program()
 }
 Program::Program(const Program& other)
 {
+    deleteProgram();
     copyProgram(other);
 }
 Program& Program::operator=(const Program& other)
 {
     if(this != &other)
     {
-        deleteProgram();
         copyProgram(other);
     }
     return (*this);

@@ -93,7 +93,7 @@ int main()
 
                 if(flag == 1)
                 {
-                    programs[numPrograms] = new Program(subjects[i]->get_program(), subjects, numSubjects);
+                    programs[numPrograms] = new Program(subjects[i]->get_program(), subjects, numSubjects);d
                     numPrograms ++;
                 }
             }

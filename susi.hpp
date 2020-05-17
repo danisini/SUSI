@@ -24,6 +24,8 @@ private:
     void saveAs(String);
     void deleteSusi();
     size_t countSpaces(String);
+    void protocol(String, const Program&);
+    void sortForProtocol();
 public:
     Susi();
     ~Susi();
@@ -31,6 +33,42 @@ public:
     Susi& operator=(const Susi&) = delete;
 
 };
+void Susi::sortForProtocol()
+{
+    for(size_t i = 0; i < numStudents; i ++)
+    {
+        for(size_t j = i + 1; j < numStudents; j ++)
+        {
+            if(students[i]->get_year() > students[j]->get_year() || (students[i]->get_year() == students[j]->get_year() && students[i]->get_fn() > students[j]->get_fn()))
+            {
+                Student* temp = students[i];
+                students[i] = students[j];
+                students[j] = temp;
+            }
+        }
+    }
+}
+void Susi::protocol(String course, const Program& program)
+{
+    std::cout << "For program with name: " << program.get_program();
+    size_t y = 0, cnt = 1;
+    for(size_t i = 0; i < numStudents; i ++)
+    {
+        if(students[i]->get_programName() == program.get_program() && students[i]->hasSubject(course))
+        {
+            if(students[i]->get_year() > y)
+            {
+                std::cout << " and year: " << ++ y << ":" << std::endl;
+                cnt = 1;
+            }
+            std::cout << cnt ++ << ") ";
+            students[i]->printForProtocol(course);
+
+        }
+    }
+    if(y == 0) std::cout << " there aren't any students." << std::endl;
+    std::cout << "--------------------------------------------------------------" << std::endl;
+}
 void Susi::deleteSusi()
 {
     for(size_t i = 0; i < numSubjects; i ++)
@@ -111,6 +149,7 @@ void Susi::open(String input)
         int indx;
         for(size_t i = 0; i < numStudents; i ++)
         {
+            iFile.get();
             indx = -1;
             getline(iFile, name);
             iFile >> fn >> year >> groupNum >> status;
@@ -130,10 +169,12 @@ void Susi::open(String input)
                 students[i] = new Student(name, fn, year, groupNum, status, *programs[indx]);
                 for(size_t j = 0; j < numSubjTaken; j ++)
                 {
-                    iFile >> subjName;
+                    iFile.get();
+                    getline(iFile,subjName);
                     iFile >> mark;
                     students[i]->addSubj(subjName, mark);
                 }
+
             }
             else std::cout << "This students is not in a valid program" << std::endl;
         }
@@ -141,28 +182,22 @@ void Susi::open(String input)
     }
     else if(fileType == "subjects")
     {
-        std::cout << "We are here" << std::endl;
         filePathSubj = filePath;
         numSubjects = 0;
         iFile >> numSubjects;
         size_t year;
         String name, program;
         bool type;
-        std::cout << "num=" << numSubjects << std::endl;
         subjects = new Subject*[numSubjects];
         iFile.get();
         for(size_t i = 0; i < numSubjects; i ++)
         {
             getline(iFile, name);
-            std::cout << name ;
             iFile >> type >> year;
             iFile.get();
             getline(iFile, program);
-            std::cout << name << " " << program << "  " << type << " " << year <<std::endl;
             subjects[i] = new Subject(name, program, type, year);
-            std::cout << name << " " << program << "  " << type << " " << year <<std::endl;
         }
-        std::cout << "test10" << std::endl;
         for(size_t i = 0; i < numSubjects; i ++)
         {
             bool flag = 1;
@@ -174,7 +209,6 @@ void Susi::open(String input)
                     break;
                 }
             }
-
             if(flag == 1)
             {
                 numPrograms ++;
@@ -320,28 +354,24 @@ Susi::Susi()
                     indx = i;
             }
             Student** tempor = new Student*[numStudents + 1];
-            std::cout << numStudents << std::endl;
             for(size_t i = 0; i < numStudents; i ++)
             {
                 tempor[i] = new Student(*students[i]);
             }
 
-            std::cout << "test1" << std::endl;
             if(indx != -1) tempor[numStudents] = new Student(name, fn, 1, group, 0, *programs[indx]);
             else std::cout << "This student belongs to no program" << std::endl;
-            std::cout << "test4" << std::endl;
             deleteStudent();
-            std::cout << "test3" << std::endl;
             students = tempor;
-            std::cout << "test2" << std::endl;
-            for(int i = 0; i < programs[indx]->get_numSubjects(); i ++)std::cout << programs[indx]->get_subject(i)->get_name()<<std::endl;
+            for(int i = 0; i < programs[indx]->get_numSubjects(); i ++)std::cout <<"test15 " <<  programs[indx]->get_subject(i)->get_name()<<std::endl;
             numStudents ++;
             students[numStudents - 1]->print();
         }
         else if(command == "advance")
         {
-            size_t fn; ///using static ones
+            size_t fn;
             std::cin >> fn;
+            std::cin.get();
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(students[i]->get_fn() == fn)
@@ -398,6 +428,7 @@ Susi::Susi()
             {
                 size_t group;
                 std::cin >> group;
+                std::cin.get();
                 if(!students[indx]->is_interrupted())
                 {
                     students[indx]->set_group(group);
@@ -411,6 +442,7 @@ Susi::Susi()
             {
                 size_t year;
                 std::cin >> year;
+                std::cin.get();
                 if(!students[indx]->is_interrupted() && students[indx]->canChangeYear(year))
                 {
                     students[indx]->set_year(year);
@@ -420,8 +452,9 @@ Susi::Susi()
         }
         else if(command == "graduate")
         {
-            size_t fn;///using static ones
+            size_t fn;
             std::cin >> fn;
+            std::cin.get();
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(students[i]->get_fn() == fn)
@@ -433,8 +466,9 @@ Susi::Susi()
         }
         else if(command == "interrupt")
         {
-            size_t fn;///using static ones
+            size_t fn;
             std::cin >> fn;
+            std::cin.get();
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(students[i]->get_fn() == fn)
@@ -446,8 +480,9 @@ Susi::Susi()
         }
         else if(command == "resume")
         {
-            size_t fn;///using static ones
+            size_t fn;
             std::cin >> fn;
+            std::cin.get();
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(students[i]->get_fn() == fn)
@@ -461,6 +496,7 @@ Susi::Susi()
         {
             size_t fn;
             std::cin >> fn;
+            std::cin.get();
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(students[i]->get_fn() == fn)
@@ -476,6 +512,7 @@ Susi::Susi()
             size_t year;
             getline(std::cin, s1);
             std::cin >> year;
+            std::cin.get();
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(s1 == students[i]->get_programName() && year == students[i]->get_year())
@@ -493,10 +530,14 @@ Susi::Susi()
             {
                 if(students[i]->get_fn() == fn)
                 {
-                    students[i]->print();
-                    std::cout << course << std::endl;
-                    students[i]->enrollIn(course, 2.00);///not needed 2.00
-                    break;
+                    if(students[i]->is_interrupted() == 0)
+                    {
+                        students[i]->print();
+                        std::cout << course << std::endl;
+                        students[i]->enrollIn(course, 2.00);///not needed 2.00
+                        break;
+                    }
+                    else std::cout << "This student has no rights!" << std::endl;
                 }
             }
         }
@@ -509,24 +550,36 @@ Susi::Susi()
             std::cin.get();
             getline(std::cin, course);
             std::cin >> mark;
+            std::cin.get();
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(students[i]->get_fn() == fn)
                 {
-                    students[i]->addGrade(course, mark);///not needed 2.00
-                    break;
+                    if(students[i]->is_interrupted() == 0)
+                    {
+                        students[i]->addGrade(course, mark);///not needed 2.00
+                        break;
+                    }
+                    else std::cout << "This student has no rights!" << std::endl;
                 }
             }
-
         }
         else if(command == "protocol")
         {
-
+            String course;
+            getline(std::cin, course);
+            sortForProtocol();
+            for(size_t i = 0; i < numPrograms; i ++)
+            {
+                std::cout << i << " " << programs[i]->get_program() << std::endl;
+                protocol(course, *programs[i]);
+            }
         }
         else if(command == "report")
         {
-            size_t fn;///using static ones
+            size_t fn;
             std::cin >> fn;
+            std::cin.get();
             for(size_t i = 0; i < numStudents; i ++)
             {
                 if(students[i]->get_fn() == fn)

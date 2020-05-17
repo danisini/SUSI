@@ -20,7 +20,7 @@ public:
     Subject(String, String, const bool&, const size_t&);
     void construct(String, String, const bool&, const size_t&);
     void print()const;
-
+    Subject& operator=(const Subject&);
     bool operator==(const Subject&);
 };
 void Subject::print()const
@@ -43,8 +43,6 @@ Subject::Subject(String name_ = "", String program_= "", const bool& type_ = 1, 
     type = type_;
     year = year_;
     mark = 2.00;
-
-    std::cout << "test7" << std::endl;
 }
 bool Subject::operator==(const Subject& other)
 {
