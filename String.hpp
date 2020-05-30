@@ -8,7 +8,6 @@ class String
 private:
     char* str;
     size_t sz;
-    bool flagForEndl;
     void copy_string(const String&);
     void delete_string();
     void add_char(const char);

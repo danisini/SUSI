@@ -16,7 +16,6 @@ private:
     size_t numStudents;
     String filePathSubj;
     String filePathStud;
-
     void deleteStudent();
     void open(String);
     void save();
@@ -174,7 +173,6 @@ void Susi::open(String input)
                     iFile >> mark;
                     students[i]->addSubj(subjName, mark);
                 }
-
             }
             else std::cout << "This students is not in a valid program" << std::endl;
         }
@@ -227,7 +225,6 @@ void Susi::open(String input)
                     break;
                 }
             }
-
             if(flag == 1)
             {
                 programs[numPrograms] = new Program(subjects[i]->get_program(), subjects, numSubjects);
@@ -534,7 +531,7 @@ Susi::Susi()
                     {
                         students[i]->print();
                         std::cout << course << std::endl;
-                        students[i]->enrollIn(course, 2.00);///not needed 2.00
+                        students[i]->enrollIn(course, 2.00);
                         break;
                     }
                     else std::cout << "This student has no rights!" << std::endl;

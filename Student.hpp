@@ -9,10 +9,9 @@ class Student
 {
 private:
     size_t fn, year, groupNum, status;
-    String name;///status-0 = zapisan
+    String name;
     double averMarks;
     Program program;
-    ///static numStudents;
     std::vector<int> indexOfTakenOnes;///must fix it using dynamic array
 public:
     Student();
@@ -205,10 +204,7 @@ void Student::enrollIn(String subjName, const double& mark)
                     program.get_subject(i)->set_mark(mark);
                     indexOfTakenOnes.push_back(i);
             }
-            else
-            {
-                std::cout << "This student is in lower year than allowed for this course!" << std::endl;
-            }
+            else std::cout << "This student is in lower year than allowed for this course!" << std::endl;
             return;
         }
     }

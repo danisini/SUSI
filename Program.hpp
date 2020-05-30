@@ -7,21 +7,21 @@
 class Program
 {
 private:
-    void copyProgram(const Program&);
-    void deleteProgram();
     String programName;
     Subject** subjects;
     size_t numSubjects;
     std::vector <size_t> indexOfSubjects;
+    void copyProgram(const Program&);
+    void deleteProgram();
 public:
-    const String get_program()const{return programName;}
-    void set_program(const String& programName_){programName = programName_;}
-    Subject* get_subject(const size_t& i)const{return subjects[i];}/// Not const because we can't set mark then in enrollIn()
-    const size_t get_numSubjects()const{return numSubjects;}
     Program(String, Subject**, const size_t&);
     Program(const Program&);
     Program& operator=(const Program&);
     ~Program();
+    const String get_program()const{return programName;}
+    void set_program(const String& programName_){programName = programName_;}
+    Subject* get_subject(const size_t& i)const{return subjects[i];}/// Not const because we can't set mark then in enrollIn()
+    const size_t get_numSubjects()const{return numSubjects;}
     void changeProgram(const Program&);
 };
 
@@ -32,19 +32,14 @@ Program::Program(String programName_ = "", Subject** subjects_ = nullptr, const 
     numSubjects = 0;
     for(size_t i = 0; i < numSubjects_; i ++)
     {
-        if(subjects_[i]->get_program() == programName)
-        {
-            numSubjects ++;
-        }
+        if(subjects_[i]->get_program() == programName)numSubjects ++;
     }
     subjects = new Subject*[numSubjects];
     numSubjects = numSubjects_;
     for(size_t i = 0; i < numSubjects; i ++)
     {
         if(subjects_[i]->get_program() == programName)
-        {
             indexOfSubjects.push_back(i);
-        }
         subjects[i] = new Subject(subjects_[i]->get_name(), subjects_[i]->get_program(), subjects_[i]->get_type(), subjects_[i]->get_year());
     }
 }
@@ -62,10 +57,7 @@ void Program::changeProgram(const Program& other)
                 break;
             }
         }
-        if(flag)
-        {
-            indexOfSubjects.push_back(other.indexOfSubjects[i]);
-        }
+        if(flag)indexOfSubjects.push_back(other.indexOfSubjects[i]);
         else break;
     }
 }

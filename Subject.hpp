@@ -46,11 +46,6 @@ Subject::Subject(String name_ = "", String program_= "", const bool& type_ = 1, 
 }
 bool Subject::operator==(const Subject& other)
 {
-    if(other.name == name)
-    {
-        ///v documentaciqta da se napishe che se priema samo tova za zadulj
-        return 1;
-    }
-    return 0;
+    return (other.name == name);
 }
 #endif // _SUBJECT_H_
