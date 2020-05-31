@@ -3,7 +3,7 @@
 #include <iostream>
 #include "String.hpp"
 #include "Program.hpp"
-#include <vector>
+#include "vector.hpp"
 #include <fstream>
 class Student
 {
@@ -12,7 +12,7 @@ private:
     String name;
     double averMarks;
     Program program;
-    std::vector<int> indexOfTakenOnes;///must fix it using dynamic array
+    Vector<int> indexOfTakenOnes;///must fix it using dynamic array
 public:
     Student();
     Student(String, const size_t&, const size_t&, const size_t&, const size_t&, const Program&);

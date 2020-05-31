@@ -1,7 +1,7 @@
 #ifndef _PROGRAM_H_
 #define _PROGRAM_H_
 #include <iostream>
-#include <vector>
+#include "vector.hpp"
 #include "String.hpp"
 #include "Subject.hpp"
 class Program
@@ -10,7 +10,7 @@ private:
     String programName;
     Subject** subjects;
     size_t numSubjects;
-    std::vector <size_t> indexOfSubjects;
+    Vector <size_t> indexOfSubjects;
     void copyProgram(const Program&);
     void deleteProgram();
 public:
